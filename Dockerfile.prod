@@ -1,0 +1,22 @@
+FROM node:15 AS Builder
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+EXPOSE 3000
+
+CMD [ "node", "index.js" ]
+
+FROM node:15-fpm-alpine
+
+WORKDIR /var/www
+
+RUN rm -rf /var/www/html
+COPY --from=Builder /var/www/node .
+
+RUN chown -R www-data:www-data /var/www
+
+EXPOSE 9000
+
+CMD [ "node-fpm" ]
